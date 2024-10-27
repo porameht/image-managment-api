@@ -3,7 +3,7 @@ import { cors } from '@elysiajs/cors';
 import { swagger } from '@elysiajs/swagger';
 import routes from './routes';
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 const host = process.env.HOST || '0.0.0.0';
 
 const app = new Elysia()
