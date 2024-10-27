@@ -13,9 +13,6 @@ RUN bun install
 # Copy source files
 COPY src/ ./src/
 
-# Copy any other necessary files for building
-COPY tsconfig.json ./ 
-
 # Build the application
 RUN bun run build
 
