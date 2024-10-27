@@ -8,7 +8,7 @@ import {
 
 const routes = new Elysia();
 
-routes.get('/health', () => {
+routes.get('/', () => {
   return { status: 'OK', message: 'Service is healthy' };
 });
 
