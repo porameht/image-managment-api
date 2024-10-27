@@ -1,0 +1,73 @@
+# Dependency directories
+node_modules/
+bun.lockb
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage directory
+coverage/
+
+# Cloudinary uploaded images (if applicable)
+uploads/
+
+# Miscellaneous
+*.bak
+*.cache
+*.pid
+*.seed
+*.pid.lock
+
+# Git related
+.git
+.gitignore
+
+# Docker related
+Dockerfile
+docker-compose.yml
+
+# README and documentation
+README.md
+docs/
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# Configuration files (except those needed for the build)
+*.config.js
+!bun.config.js
+
+# Source files (if building inside Docker)
+src/
+
+# Any other development-only files or directories
+.eslintrc
+.prettierrc

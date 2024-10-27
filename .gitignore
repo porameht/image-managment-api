@@ -1,0 +1,48 @@
+# Dependency directories
+node_modules/
+bun.lockb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Cloudinary uploaded images (if applicable)
+uploads/
+
+# Miscellaneous
+*.bak
+*.cache
+*.pid
+*.seed
+*.pid.lock
+
+# Elysia specific (if applicable)
+.elysia/
