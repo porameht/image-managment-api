@@ -42,6 +42,11 @@ function getBackgroundReplacedUrl(publicId: string, prompt: string): string {
       effect: `gen_background_replace:prompt_${prompt}`,
       fetch_format: 'auto',
       quality: 'auto',
+      loading: 'lazy',
+      dpr: 'auto',
+      responsive: true,
+      width: 'auto',
+      crop: 'scale',
     });
   } catch (error) {
     console.error('Error getting background-replaced URL:', error);
