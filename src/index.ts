@@ -21,9 +21,6 @@ const app = new Elysia()
     app.onRequest((context) => {
       logger.info(`Request: ${context.request.method} ${context.request.url}`);
     });
-    app.onResponse((context) => {
-      logger.info(`Response: ${context.response.status}`);
-    });
     return app;
   })
   .use(routes)
