@@ -5,10 +5,10 @@ FROM oven/bun:1.0 as builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json ./
+COPY package.json bun.lockb ./
 
 # Install dependencies
-RUN bun install
+RUN bun install --production
 
 # Copy the rest of the application
 COPY . .
@@ -25,6 +25,7 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/bun.lockb ./bun.lockb
 
 # Set environment variables
 ENV NODE_ENV=production
