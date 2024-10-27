@@ -3,6 +3,9 @@ import { cors } from '@elysiajs/cors';
 import { swagger } from '@elysiajs/swagger';
 import routes from './routes';
 
+const port = process.env.PORT || 3000;
+const host = process.env.HOST || '0.0.0.0';
+
 const app = new Elysia()
   .use(cors({
     origin: ['*'],
@@ -12,6 +15,9 @@ const app = new Elysia()
   }))
   .use(swagger())
   .use(routes)
-  .listen(3000);
+  .listen({
+    port: port,
+    hostname: host,
+  });
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
