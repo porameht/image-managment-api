@@ -65,9 +65,6 @@ __tests__/
 *.config.js
 !bun.config.js
 
-# Source files (if building inside Docker)
-src/
-
 # Any other development-only files or directories
 .eslintrc
 .prettierrc

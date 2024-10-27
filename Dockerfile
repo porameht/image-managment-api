@@ -5,13 +5,16 @@ FROM oven/bun:1.0 as builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json ./
+COPY package.json bun.lockb ./
 
 # Install dependencies
 RUN bun install
 
-# Copy the rest of the application
-COPY . .
+# Copy source files
+COPY src/ ./src/
+
+# Copy any other necessary files for building
+COPY tsconfig.json ./ 
 
 # Build the application
 RUN bun run build
