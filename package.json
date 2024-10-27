@@ -1,0 +1,28 @@
+{
+  "name": "image-generator-service",
+  "version": "1.0.0",
+  "description": "Image service using Cloudinary and Bun",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "bun test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@elysiajs/cors": "^1.1.1",
+    "@elysiajs/swagger": "^1.1.5",
+    "cloudinary": "^1.41.3",
+    "elysia": "^0.8.17"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "eslint": "^8.40.0",
+    "prettier": "^2.8.8"
+  }
+}
