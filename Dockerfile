@@ -13,7 +13,7 @@ RUN bun install
 # Copy the rest of the application
 COPY . .
 
-# Build the application (if needed)
+# Build the application
 RUN bun run build
 
 # Start a new stage for a smaller final image
@@ -22,9 +22,9 @@ FROM oven/bun:1.0
 WORKDIR /app
 
 # Copy built assets from builder stage
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/src ./src
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -32,5 +32,5 @@ ENV NODE_ENV=production
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Start the application
-CMD ["bun", "run", "start"]
+# Start the application in production mode
+CMD ["bun", "run", "prod"]

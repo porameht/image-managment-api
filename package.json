@@ -7,10 +7,11 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
-    "build": "bun run build",
+    "build": "bun build ./src/index.ts --outdir ./dist",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "bun test"
+    "test": "bun test",
+    "prod": "NODE_ENV=production bun run ./dist/index.js"
   },
   "keywords": [],
   "author": "",
