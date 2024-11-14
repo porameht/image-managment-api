@@ -8,6 +8,10 @@ A powerful image processing service built with Bun, Elysia, and Cloudinary that 
 - Image optimization
 - Automatic image cropping
 - Background replacement with AI-generated scenes
+- Video upload to Cloudinary
+- Video optimization
+- Video watermarking
+- File to URL conversion
 - RESTful API endpoints
 - Swagger documentation
 - CORS support
@@ -55,6 +59,7 @@ A powerful image processing service built with Bun, Elysia, and Cloudinary that 
 - `POST /optimize`: Get an optimized version of an image
 - `POST /autocrop`: Automatically crop an image to specified dimensions
 - `POST /replace-background`: Replace the background of an image with an AI-generated scene
+- `POST /add-watermark-video`: Add a watermark to a video
 
 For detailed information on request/response formats, refer to the Swagger documentation.
 
