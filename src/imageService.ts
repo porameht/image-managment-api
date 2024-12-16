@@ -1,6 +1,9 @@
 import cloudinary from './config';
 import fs from 'fs';
 import { UrlRequest, FileRequest } from './constant';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import os from 'os';
 
 export async function uploadImage(imageUrl: string, publicId: string) {
   try {
@@ -55,14 +58,25 @@ function getBackgroundReplacedUrl(publicId: string, prompt: string): string {
     throw error;
   }
 }
-
-function getWatermarkedVideoUrl(publicId: string, watermarkUrl: string): string {
+function getWatermarkedVideoUrl(publicId: string, imagePublicId: string): string {
   try {
+    const gravity = "south_east";
+    const x = 10;
+    const y = 10;
+    const flags = "layer_apply";
+    const quality = "auto";
+    const width = 100;
+    const height = 100;
     return cloudinary.video(publicId, {
       transformation: [
-        { overlay: watermarkUrl },
-        { flags: "layer_apply" },
-        { quality: "auto" }
+        { overlay: imagePublicId },
+        { gravity: gravity },
+        { x: x },
+        { y: y },
+        { width: width },
+        { height: height },
+        { flags: flags },
+        { quality: quality }
       ]
     });
   } catch (error) {
@@ -71,43 +85,82 @@ function getWatermarkedVideoUrl(publicId: string, watermarkUrl: string): string 
   }
 }
 
-export async function imageFileToUrl(filename: string) {
+export async function imageFileToUrl(file: File) {
   try {
-    const result = await cloudinary.uploader.upload(filename, {
+    // Create temp file path
+    const tempDir = os.tmpdir();
+    const tempFilePath = path.join(tempDir, `upload_${Date.now()}_${file.name}`);
+    
+    // Convert File to Buffer and write to temp file
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await writeFile(tempFilePath, buffer);
+
+    // Upload using file path
+    const result = await cloudinary.uploader.upload(tempFilePath, {
+      resource_type: "auto",
+      quality: "auto",
+      filename_override: file.name,
       use_filename: true,
-      quality: "auto"
+      unique_filename: true
     });
-    // Delete file after upload
-    deleteFile(filename);
+
+    // Clean up temp file
+    try {
+      await fs.promises.unlink(tempFilePath);
+    } catch (deleteError) {
+      console.error('Error deleting temp file:', deleteError);
+    }
+
     return result;
   } catch (error) {
-    console.error('Error uploading with filename:', error);
-    try {
-      deleteFile(filename);
-    } catch (deleteError) {
-      console.error('Error deleting file:', deleteError);
-    }
+    console.error('Error uploading image file:', error);
     throw error;
   }
 }
-
-export async function videoFileToUrl(filename: string) {
+export async function videoFileToUrl(file: File) {
   try {
-    const result = await cloudinary.uploader.upload_large(filename, {
-      resource_type: "video",
-      chunk_size: 6000000,
-      quality: "auto"
+    // Create temp file path
+    const tempDir = os.tmpdir();
+    const tempFilePath = path.join(tempDir, `upload_${Date.now()}_${file.name}`);
+    
+    // Convert File to Buffer and write to temp file
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await writeFile(tempFilePath, buffer);
+
+    const publicId = file.name.split('.')[0];
+    const uniquePublicId = generateUniquePublicId(publicId);
+
+    console.log("uniquePublicId", uniquePublicId)
+    // Upload using file path with chunking
+    let finalResult;
+    const uploadPromise = new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_large(tempFilePath, {
+        public_id: uniquePublicId,
+        resource_type: "video",
+        chunk_size: 6000000,
+        quality: "auto",
+        unique_filename: true
+      }, (error, result) => {
+        if (error) reject(error);
+        finalResult = result;
+        resolve(result);
+      });
     });
-    // Delete file after upload
-    deleteFile(filename);
-    return result;
-  } catch (error) {
-    console.error('Error uploading with filename:', error);
+
+    await uploadPromise;
+
+    // Clean up temp file
     try {
-      deleteFile(filename);
+      await fs.promises.unlink(tempFilePath);
     } catch (deleteError) {
-      console.error('Error deleting file:', deleteError);
+      console.error('Error deleting temp file:', deleteError);
     }
+
+    return finalResult;
+  } catch (error) {
+    console.error('Error uploading video file:', error);
     throw error;
   }
 }
@@ -133,27 +186,30 @@ export async function processOptimize(imageUrl: string) {
   return getOptimizedUrl(uploadResult.public_id);
 }
 
-export async function processAddWatermarkVideoFromUrl(videoPublicId: string, watermarkUrl: string) {
-  return getWatermarkedVideoUrl(videoPublicId, watermarkUrl);
+export async function processAddWatermarkVideoFromUrl(videoUrl: string, watermarkUrl: string) {
+  const videoPublicId = extractPublicId(videoUrl);
+  const watermarkPublicId = extractPublicId(watermarkUrl);
+  const uniqueVideoPublicId = generateUniquePublicId(videoPublicId);
+  const uniqueWatermarkPublicId = generateUniquePublicId(watermarkPublicId);
+  const videoUploadResult = await uploadImage(videoUrl, uniqueVideoPublicId);
+  const watermarkUploadResult = await uploadImage(watermarkUrl, uniqueWatermarkPublicId);
+
+  return getWatermarkedVideoUrl(videoUploadResult.public_id, watermarkUploadResult.public_id);
 }
 
 export async function processAddWatermarkVideoFromFile(videoFile: File, watermarkFile: File) {
-  const videoFilename = await getFilename(videoFile);
-  const watermarkFilename = await getFilename(watermarkFile);
-  const videoUploadResult = await videoFileToUrl(videoFilename);
-  const watermarkUploadResult = await imageFileToUrl(watermarkFilename);
-  return getWatermarkedVideoUrl(videoUploadResult.public_id, watermarkUploadResult.secure_url);
+  const videoUploadResult = await videoFileToUrl(videoFile);
+  const watermarkUploadResult = await imageFileToUrl(watermarkFile);
+  return getWatermarkedVideoUrl(videoUploadResult.public_id, watermarkUploadResult.public_id);
 }
 
 export async function processImageFileToUrl(file: File): Promise<{ secure_url: string; public_id: string }> {
-  const filename = await getFilename(file);
-  const uploadResult = await imageFileToUrl(filename);
+  const uploadResult = await imageFileToUrl(file);
   return { secure_url: uploadResult.secure_url, public_id: uploadResult.public_id };
 }
 
 export async function processVideoFileToUrl(file: File): Promise<{ secure_url: string; public_id: string }> {
-  const filename = await getFilename(file);
-  const uploadResult = await videoFileToUrl(filename);
+  const uploadResult = await videoFileToUrl(file);
   return { secure_url: uploadResult.secure_url, public_id: uploadResult.public_id };
 }
 
@@ -164,21 +220,6 @@ function extractPublicId(imageUrl: string): string {
 function generateUniquePublicId(publicId: string): string {
   const uuid = Math.random().toString(36).substring(2, 8);
   return `${publicId}_${uuid}`;
-}
-
-async function getFilename(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const filename = file.name;
-  return filename;
-}
-
-async function deleteFile(filename: string) {
-  try {
-    fs.unlinkSync(filename);
-  } catch (error) {
-    console.error('Error deleting file:', error);
-  }
 }
 
 export function isUrlRequest(body: unknown): body is UrlRequest {
