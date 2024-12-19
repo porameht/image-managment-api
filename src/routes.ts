@@ -8,10 +8,9 @@ import {
   processImageFileToUrl,
   processVideoFileToUrl,
   processAddWatermarkVideoFromFile,
-  isUrlRequest,
-  isFileRequest,
 } from './imageService';
 import { UrlRequest, FileRequest } from './constant';
+import { isUrlRequest, isFileRequest } from './utils';
 
 const routes = new Elysia();
 
