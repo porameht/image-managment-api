@@ -1,0 +1,109 @@
+### Health Check
+GET http://localhost:3000/
+
+### Convert Image File to URL
+POST http://localhost:3000/img-to-url
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Convert Video File to URL
+POST http://localhost:3000/video-to-url
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.mp4"
+Content-Type: video/mp4
+
+< ./sample.mp4
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Upload Image
+POST http://localhost:3000/upload
+Content-Type: application/json
+
+{
+    "imageUrl": "https://example.com/sample.jpg",
+    "publicId": "sample_image_1"
+}
+
+### Optimize Image
+POST http://localhost:3000/optimize
+Content-Type: application/json
+
+{
+    "imageUrl": "https://example.com/sample.jpg"
+}
+
+### Auto Crop Image
+POST http://localhost:3000/autocrop
+Content-Type: application/json
+
+{
+    "imageUrl": "https://example.com/sample.jpg",
+    "width": "800",
+    "height": "600"
+}
+
+### Remove Background by file
+POST http://localhost:3000/remove-bg
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.jpg"
+Content-Type: image/jpeg
+
+< ./sample.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+{
+    "dropShadow": true
+}
+
+### Remove Background by URL
+POST http://localhost:3000/remove-bg
+Content-Type: application/json
+
+{
+    "imageUrl": "https://res.cloudinary.com/image52hz/image/upload/v1737275141/sample_kvj62g.jpg",
+    "dropShadow": false
+}
+
+### Replace Background
+POST http://localhost:3000/prompt-bg
+Content-Type: application/json
+
+{
+    "imageUrl": "https://res.cloudinary.com/image52hz/image/upload/v1737275141/sample_kvj62g.jpg",
+    "prompt": "beautiful sunset beach with a clear sky"
+}
+
+### Add Watermark to Video (URL version)
+POST http://localhost:3000/add-watermark-video
+Content-Type: application/json
+
+{
+    "videoUrl": "https://example.com/sample.mp4",
+    "watermarkUrl": "https://example.com/watermark.png"
+}
+
+### Add Watermark to Video (File version)
+POST http://localhost:3000/add-watermark-video
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="videoFile"; filename="sample.mp4"
+Content-Type: video/mp4
+
+< ./sample.mp4
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="watermarkFile"; filename="watermark.png"
+Content-Type: image/png
+
+< ./watermark.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

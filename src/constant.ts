@@ -41,5 +41,14 @@ export const ERROR_MESSAGE = {
   CROP_ERROR: "Error getting auto-cropped URL", 
   BACKGROUND_ERROR: "Error getting background-replaced URL",
   WATERMARK_ERROR: "Error getting watermarked video URL",
-  TEMP_FILE_ERROR: "Error deleting temp file"
+  TEMP_FILE_ERROR: "Error deleting temp file",
+  BACKGROUND_REMOVE_ERROR: "Error getting background-removed URL",
+  UPLOAD_FILE_ERROR: "Error uploading file",
+}
+
+export const CORS_OPTIONS = {
+  ORIGIN: ['*'],
+  METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  ALLOWED_HEADERS: ['Content-Type', 'Authorization'],
+  CREDENTIALS: true,
 }

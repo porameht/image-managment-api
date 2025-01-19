@@ -9,6 +9,8 @@ import { writeFile } from "fs/promises";
 import path from "path";
 import os from "os";
 import { extractPublicId, generateUniquePublicId } from "./utils";
+import replicate from "./client";
+import { ReplicateResponse } from "./types";
 
 export async function uploadImage(imageUrl: string, publicId: string) {
   try {
@@ -30,6 +32,27 @@ export function getOptimizedUrl(publicId: string) {
     });
   } catch (error) {
     console.error(ERROR_MESSAGE.OPTIMIZE_ERROR, error);
+    throw error;
+  }
+}
+
+export async function getBackgroundRemovedUrl(imageUrl: string): Promise<string> {
+  try {
+    const response = await replicate.run(
+      "lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285a65c14638cc5f36f34befaf1",
+      {
+        input: {
+          image: imageUrl
+        }
+      }
+    ) as ReplicateResponse;
+
+    const publicId = generateUniquePublicId(imageUrl);
+    const uploadResult = await uploadImage(response.output as string, publicId);
+
+    return uploadResult.secure_url;
+  } catch (error) {
+    console.error(ERROR_MESSAGE.BACKGROUND_REMOVE_ERROR, error);
     throw error;
   }
 }
@@ -187,6 +210,23 @@ export async function videoFileToUrl(file: File) {
     console.error(ERROR_MESSAGE.UPLOAD_ERROR, error);
     throw error;
   }
+}
+
+export async function processBackgroundRemove(
+  imageUrl: string | undefined,
+  file: File | undefined,
+) {
+  if (imageUrl) {
+    const publicId = extractPublicId(imageUrl);
+    const uniquePublicId = generateUniquePublicId(publicId);
+    const uploadResult = await uploadImage(imageUrl, uniquePublicId);
+
+    return getBackgroundRemovedUrl(uploadResult.secure_url);
+  } else if (file) {
+    const uploadResult = await imageFileToUrl(file);
+    return getBackgroundRemovedUrl(uploadResult.secure_url);
+  }
+  throw new Error('Image URL or file is required');
 }
 
 export async function processBackgroundReplacement(

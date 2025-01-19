@@ -8,6 +8,7 @@ import {
   processImageFileToUrl,
   processVideoFileToUrl,
   processAddWatermarkVideoFromFile,
+  processBackgroundRemove,
 } from './imageService';
 import { UrlRequest, FileRequest } from './constant';
 import { isUrlRequest, isFileRequest } from './utils';
@@ -57,7 +58,22 @@ routes.post('/autocrop', async ({ body }) => {
   return { success: true, url };
 });
 
-routes.post('/replace-background', async ({ body }) => {
+routes.post('/remove-bg', async ({ body }) => {
+  const { imageUrl, file } = body as { imageUrl?: string, file?: File };
+  if (imageUrl && !file) {
+    const url = await processBackgroundRemove(imageUrl, undefined);
+    return { success: true, url };
+  }
+
+  if (file && !imageUrl) {
+    const url = await processBackgroundRemove(undefined, file);
+    return { success: true, url };
+  }
+
+  return { success: false, error: 'Image URL or file is required' };
+});
+
+routes.post('/prompt-bg', async ({ body }) => {
   const { imageUrl, prompt } = body as { imageUrl: string; prompt: string };
   if (!imageUrl || !prompt) {
     return { success: false, error: 'Image URL and prompt are required' };
